@@ -40,10 +40,6 @@ class ADKShooterCharacter : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
-
-	/* Health */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-	float Health = 100.0f;
 	
 public:
 	ADKShooterCharacter();

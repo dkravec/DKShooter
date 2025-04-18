@@ -18,6 +18,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class ADKShooterProjectile> ProjectileClass;
 
+	///** Grenade Projectile class to spawn */
+	//UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	//TSubclassOf<class ADKGrenadeProjectile> GrenadeProjectileClass;
+
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
@@ -38,6 +42,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
+	/** Secondary Fire Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* SecondaryFireAction;
+
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();
 
@@ -48,6 +56,10 @@ public:
 	/** Make the weapon Fire a Projectile */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
+
+	/** Make the weapon Fire a Secondary Projectile */
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void SecondaryFire();
 
 protected:
 	/** Ends gameplay for this component. */
