@@ -15,12 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AEnemy();
 
-	UPROPERTY(VisibleAnywhere)
-	class USphereComponent* Root;
-
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-	class UStaticMeshComponent* VisualMesh;
-
 	UPROPERTY(EditAnywhere, Category = "Enemy Sense")
 	class UPawnSensingComponent* PawnSensing;
 
