@@ -9,7 +9,7 @@
 AEnemySpawner::AEnemySpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -18,6 +18,8 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Start the first spawn
+	SpawnEnemy();
 }
 
 // Called every frame
@@ -29,39 +31,35 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::SpawnEnemy()
 {
-
-	if (!IsValid(EnemyObject))
+	if (!bIsEnemyObjectActive && EnemyBlueprint)
 	{
-		// step 3
-		// check if the ring object is not currently active
-		if (bIsEnemyObjectActive == false) {
-			// Create spawn parameters to control the spawning process
-			FActorSpawnParameters SpawnParams;
-			// Set the owner of the spawned ring to be this spawner
-			SpawnParams.Owner = this;
-
-			// Set the socllison handling method for spawning the ring
-			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-			UWorld* World = GetWorld();
-			EnemyObject = World->SpawnActor<AEnemy>(EnemyBlueprint, this->GetActorLocation(), this->GetActorRotation(), SpawnParams);
-
-			// check if the ring object wa successfully spawned
-			if (EnemyObject) {
-				// Get the current wave number from the game mode
-				if (ADKShooterGameMode* GameMode = Cast<ADKShooterGameMode>(World->GetAuthGameMode()))
-				{
-					EnemyObject->SetHealthBasedOnWave(GameMode->CurrentWave);
-				}
-
-				EnemyObject->OnDestroyed.AddDynamic(this, &AEnemySpawner::OnEnemyKilled);
-				bIsEnemyObjectActive = true;
-			}
+		// Clear any existing timer
+		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+		
+		// Spawn the enemy
+		FVector SpawnLocation = GetActorLocation();
+		FRotator SpawnRotation = GetActorRotation();
+		EnemyObject = GetWorld()->SpawnActor<AEnemy>(EnemyBlueprint, SpawnLocation, SpawnRotation);
+		
+		if (EnemyObject)
+		{
+			bIsEnemyObjectActive = true;
+			EnemyObject->OnDestroyed.AddDynamic(this, &AEnemySpawner::OnEnemyKilled);
 		}
 	}
 }
 
-void AEnemySpawner::OnEnemyKilled(AActor* DestroyedActor) {
+void AEnemySpawner::OnEnemyKilled(AActor* DestroyedActor)
+{
 	bIsEnemyObjectActive = false;
-	DestroyedActor->OnDestroyed.RemoveAll(this);
+	
+	// Calculate new spawn delays for increased difficulty
+	SpawnDelayRangeLow = SpawnDelayRangeLow / DifficultyScalar;
+	SpawnDelayRangeHigh = SpawnDelayRangeHigh / DifficultyScalar;
+	
+	// Calculate new spawn delay
+	CurrentSpawnDelay = FMath::FRandRange(SpawnDelayRangeLow, SpawnDelayRangeHigh);
+	
+	// Set timer for next spawn
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AEnemySpawner::SpawnEnemy, CurrentSpawnDelay, false);
 }

@@ -22,6 +22,8 @@ AEnemy::AEnemy() : Super()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 	
 	Health = 100;
 	PrimaryActorTick.bCanEverTick = false;
@@ -34,6 +36,7 @@ AEnemy::AEnemy() : Super()
 	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::OnPawnSeen);
 
 	// Set up collision
+	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
@@ -70,7 +73,12 @@ void AEnemy::OnPawnSeen(APawn* SeenPawn)
 		TargetPlayer = Character;
 		if (AAIController* AIController = Cast<AAIController>(GetController()))
 		{
-			AIController->MoveToActor(Character);
+			// Set the destination to be right in front of the player
+			FVector PlayerLocation = Character->GetActorLocation();
+			FVector PlayerForward = Character->GetActorForwardVector();
+			FVector Destination = PlayerLocation + (PlayerForward * 100.0f); // Move to 100 units in front of player
+			
+			AIController->MoveToLocation(Destination, -1.0f, false, true, false, false, nullptr, true);
 		}
 	}
 }

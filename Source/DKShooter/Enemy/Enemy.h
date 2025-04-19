@@ -47,7 +47,9 @@ public:
 
 private:
 	ADKShooterCharacter* TargetPlayer;
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float CollisionDamage = 10.0f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float CollisionCooldown = 1.0f;
 	FTimerHandle CollisionCooldownTimer;
 	bool bCanDealCollisionDamage = true;
