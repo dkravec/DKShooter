@@ -30,8 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ClassToSpawn")
 	UClass* EnemyBlueprint;
 
+
 	UPROPERTY(Transient)
 	class AEnemy* EnemyObject;
+
 
 	UPROPERTY(Transient)
 	bool bIsEnemyObjectActive = false;

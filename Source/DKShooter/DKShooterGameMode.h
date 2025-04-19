@@ -13,6 +13,12 @@ class ADKShooterGameMode : public AGameModeBase
 
 public:
 	ADKShooterGameMode();
+
+	void SpawnEnemies();
+protected:
+	virtual void BeginPlay() override;
+
+	TArray<AActor*> FoundEnemies;
 };
 
 

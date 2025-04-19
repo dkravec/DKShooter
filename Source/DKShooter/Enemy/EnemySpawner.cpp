@@ -28,7 +28,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::SpawnEnemy()
 {
-/*
+
 	if (!IsValid(EnemyObject))
 	{
 		// step 3
@@ -52,7 +52,7 @@ void AEnemySpawner::SpawnEnemy()
 				bIsEnemyObjectActive = true;
 			}
 		}
-	}*/
+	}
 }
 
 void AEnemySpawner::OnEnemyKilled(AActor* DestroyedActor) {

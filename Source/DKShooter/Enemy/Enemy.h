@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
 UCLASS()
-class DKSHOOTER_API AEnemy : public AActor
+class DKSHOOTER_API AEnemy : public ACharacter
 {
 	GENERATED_BODY()
 	
@@ -20,6 +20,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class UStaticMeshComponent* VisualMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Sense")
+	class UPawnSensingComponent* PawnSensing;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	int Health;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,5 +34,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
+	UFUNCTION()
+	void OnPawnSeen(APawn* SeenPawn);
 };
