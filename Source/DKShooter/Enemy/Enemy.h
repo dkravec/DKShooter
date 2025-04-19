@@ -27,6 +27,9 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UFUNCTION()
+	void SetHealthBasedOnWave(int WaveNumber);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

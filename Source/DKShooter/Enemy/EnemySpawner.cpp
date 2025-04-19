@@ -3,6 +3,7 @@
 
 #include "./EnemySpawner.h"
 #include "./Enemy.h"
+#include "../DKShooterGameMode.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -47,8 +48,13 @@ void AEnemySpawner::SpawnEnemy()
 
 			// check if the ring object wa successfully spawned
 			if (EnemyObject) {
+				// Get the current wave number from the game mode
+				if (ADKShooterGameMode* GameMode = Cast<ADKShooterGameMode>(World->GetAuthGameMode()))
+				{
+					EnemyObject->SetHealthBasedOnWave(GameMode->CurrentWave);
+				}
+
 				EnemyObject->OnDestroyed.AddDynamic(this, &AEnemySpawner::OnEnemyKilled);
-				// set flag indicating ring object is currently active
 				bIsEnemyObjectActive = true;
 			}
 		}

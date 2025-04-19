@@ -68,6 +68,11 @@ void AEnemy::OnPawnSeen(APawn* SeenPawn)
 	}
 }
 
+void AEnemy::SetHealthBasedOnWave(int WaveNumber)
+{
+	Health = 100 + (WaveNumber - 1) * 25;
+}
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
