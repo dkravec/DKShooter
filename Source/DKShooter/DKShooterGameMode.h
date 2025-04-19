@@ -15,10 +15,20 @@ public:
 	ADKShooterGameMode();
 
 	void SpawnEnemies();
+	void CheckWaveStatus();
+
+	UPROPERTY(EditAnywhere, Category = "Wave Settings")
+	int CurrentWave = 1;
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
 	TArray<AActor*> FoundEnemies;
+
+	UPROPERTY(EditAnywhere, Category = "Wave Settings")
+	float WaveCheckInterval = 4.0f;
+
+	FTimerHandle WaveCheckTimer;
 };
 
 

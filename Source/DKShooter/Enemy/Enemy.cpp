@@ -8,6 +8,7 @@
 #include "DKShooter/DKShooterCharacter.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 
 // Sets default values
@@ -30,6 +31,29 @@ AEnemy::AEnemy() : Super()
 	PawnSensing->SensingInterval = 1.0f;
 	PawnSensing->SetPeripheralVisionAngle(180.0f);
 	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::OnPawnSeen);
+
+	// Set up collision
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+}
+
+void AEnemy::TakeDamage(int DamageAmount)
+{
+	Health -= DamageAmount;
+	
+	if (Health <= 0)
+	{
+		Die();
+	}
+}
+
+void AEnemy::Die()
+{
+	// Disable movement and collision
+	GetCharacterMovement()->DisableMovement();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	SetLifeSpan(0.2f);
 }
 
 void AEnemy::OnPawnSeen(APawn* SeenPawn) 

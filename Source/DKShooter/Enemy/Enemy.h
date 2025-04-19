@@ -21,6 +21,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Enemy")
 	int Health;
 
+	UFUNCTION()
+	void TakeDamage(int DamageAmount);
+
+	UFUNCTION()
+	void Die();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

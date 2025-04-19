@@ -3,6 +3,7 @@
 #include "DKShooterProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Enemy/Enemy.h"
 
 ADKShooterProjectile::ADKShooterProjectile() 
 {
@@ -33,11 +34,18 @@ ADKShooterProjectile::ADKShooterProjectile()
 
 void ADKShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
+	// Check if we hit an enemy
+	if (AEnemy* Enemy = Cast<AEnemy>(OtherActor))
+	{
+		// Deal damage to the enemy
+		Enemy->TakeDamage(25); 
+	}
+
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		Destroy();
 	}
+
+
+	Destroy();
 }
