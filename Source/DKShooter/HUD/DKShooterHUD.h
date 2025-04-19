@@ -25,6 +25,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* PlayerHealthText;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UButton* RestartButton;
+
 	/* Binds text blocks to functions to set text */
 	virtual bool Initialize() override;
 
@@ -39,4 +42,7 @@ public:
 	/* Callback to set the player health text */
 	UFUNCTION()
 	FText SetPlayerHealthText();
+
+	UFUNCTION()
+	void OnRestartButtonClicked();
 };

@@ -33,10 +33,7 @@ void ADKShooterGameMode::SpawnEnemies()
 		{
 			if (AEnemySpawner* MySpawner = Cast<AEnemySpawner>(Spawner))
 			{
-				if (MySpawner->bIsEnemyObjectActive == false)
-				{
-					MySpawner->SpawnEnemy();
-				}
+				MySpawner->SpawnEnemy();
 			}
 		}
 	}

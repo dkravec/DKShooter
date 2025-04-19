@@ -2,6 +2,7 @@
 
 #include "DKShooterHUD.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "../Enemy/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include <DKShooter/DKShooterGameMode.h>
@@ -24,6 +25,11 @@ bool UDKShooterHUD::Initialize()
     if (PlayerHealthText)
     {
         PlayerHealthText->TextDelegate.BindUFunction(this, "SetPlayerHealthText");
+    }
+
+    if (RestartButton)
+    {
+        RestartButton->OnClicked.AddDynamic(this, &UDKShooterHUD::OnRestartButtonClicked);
     }
 
     return Success;
@@ -62,5 +68,31 @@ FText UDKShooterHUD::SetPlayerHealthText()
         return FText::FromString(FString::Printf(TEXT("Player Health: %d/%d"), Player->CurrentHealth, Player->MaxHealth));
     }
     return FText::FromString("Player Health: 0/0");
+}
+
+void UDKShooterHUD::OnRestartButtonClicked()
+{
+    // Reset the game mode
+    if (ADKShooterGameMode* GameMode = Cast<ADKShooterGameMode>(GetWorld()->GetAuthGameMode()))
+    {
+        GameMode->CurrentWave = 1;
+        GameMode->SpawnEnemies();
+    }
+
+    // Reset player health and movement
+    if (ADKShooterCharacter* Player = Cast<ADKShooterCharacter>(GetOwningPlayerPawn()))
+    {
+        Player->CurrentHealth = Player->MaxHealth;
+        
+        if (APlayerController* PC = Cast<APlayerController>(Player->GetController()))
+        {
+            PC->SetInputMode(FInputModeGameOnly());
+            PC->SetIgnoreMoveInput(false);
+            PC->SetIgnoreLookInput(false);
+            PC->bShowMouseCursor = false;
+            PC->bEnableClickEvents = false;
+            PC->bEnableMouseOverEvents = false;
+        }
+    }
 }
 

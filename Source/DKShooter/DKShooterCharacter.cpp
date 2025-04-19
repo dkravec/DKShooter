@@ -11,6 +11,8 @@
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
 #include "DKShooterGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enemy/Enemy.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -61,26 +63,16 @@ void ADKShooterCharacter::BeginPlay()
 
 }
 
-//////////////////////////////////////////////////////////////////////////// Input
-
 void ADKShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADKShooterCharacter::Move);
 
-		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADKShooterCharacter::Look);
-	}
-	else
-	{
-		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
@@ -135,13 +127,26 @@ void ADKShooterCharacter::TakeDamage(int DamageAmount)
 
 void ADKShooterCharacter::Die()
 {
-	// Disable movement and input
-//	GetCharacterMovement()->DisableMovement();
-	GetController()->SetIgnoreMoveInput(true);
-	
-	//// Notify the game mode that the player has died
-	//if (ADKShooterGameMode* GameMode = GetWorld()->GetAuthGameMode())
-	//{
-	//	GameMode->SetGameState(EGameState::GameOver);
-	//}
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		PC->StopMovement();
+
+		PC->SetIgnoreMoveInput(true);
+		PC->SetIgnoreLookInput(true);
+		PC->SetInputMode(FInputModeUIOnly());
+		
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableMouseOverEvents = true;
+	}
+
+	TArray<AActor*> FoundEnemies;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
+	for (AActor* Actor : FoundEnemies)
+	{
+		if (AEnemy* Enemy = Cast<AEnemy>(Actor))
+		{
+			Enemy->Die();
+		}
+	}
 }
