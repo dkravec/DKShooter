@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "DKShooterGameMode.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -23,6 +24,9 @@ ADKShooterCharacter::ADKShooterCharacter()
 	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 		
 	// Create a CameraComponent	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -115,4 +119,29 @@ void ADKShooterCharacter::SetHasRifle(bool bNewHasRifle)
 bool ADKShooterCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+void ADKShooterCharacter::TakeDamage(int DamageAmount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player taking damage! Health before: %d"), CurrentHealth);
+	CurrentHealth = FMath::Max(0, CurrentHealth - DamageAmount);
+	UE_LOG(LogTemp, Warning, TEXT("Player health after: %d"), CurrentHealth);
+	
+	if (CurrentHealth <= 0)
+	{
+		Die();
+	}
+}
+
+void ADKShooterCharacter::Die()
+{
+	// Disable movement and input
+//	GetCharacterMovement()->DisableMovement();
+	GetController()->SetIgnoreMoveInput(true);
+	
+	//// Notify the game mode that the player has died
+	//if (ADKShooterGameMode* GameMode = GetWorld()->GetAuthGameMode())
+	//{
+	//	GameMode->SetGameState(EGameState::GameOver);
+	//}
 }

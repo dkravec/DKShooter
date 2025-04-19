@@ -21,6 +21,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* EnemyHealthText;
 
+	/* TextBlock for player health */
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* PlayerHealthText;
+
 	/* Binds text blocks to functions to set text */
 	virtual bool Initialize() override;
 
@@ -31,4 +35,8 @@ public:
 	/* Callback to set the enemy health text */
 	UFUNCTION()
 	FText SetEnemyHealthText();
+
+	/* Callback to set the player health text */
+	UFUNCTION()
+	FText SetPlayerHealthText();
 };

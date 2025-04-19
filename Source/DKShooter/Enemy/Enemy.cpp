@@ -9,6 +9,7 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "../TP_WeaponComponent.h"
 
 
 // Sets default values
@@ -35,6 +36,8 @@ AEnemy::AEnemy() : Super()
 	// Set up collision
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
 }
 
 void AEnemy::TakeDamage(int DamageAmount)
@@ -53,6 +56,9 @@ void AEnemy::Die()
 	GetCharacterMovement()->DisableMovement();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
+	// Clear collision cooldown timer
+	GetWorld()->GetTimerManager().ClearTimer(CollisionCooldownTimer);
+	
 	SetLifeSpan(0.2f);
 }
 
@@ -61,6 +67,7 @@ void AEnemy::OnPawnSeen(APawn* SeenPawn)
 	ADKShooterCharacter* Character = Cast<ADKShooterCharacter>(SeenPawn);
 	if (Character) 
 	{
+		TargetPlayer = Character;
 		if (AAIController* AIController = Cast<AAIController>(GetController()))
 		{
 			AIController->MoveToActor(Character);
@@ -71,6 +78,24 @@ void AEnemy::OnPawnSeen(APawn* SeenPawn)
 void AEnemy::SetHealthBasedOnWave(int WaveNumber)
 {
 	Health = 100 + (WaveNumber - 1) * 25;
+}
+
+void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bCanDealCollisionDamage)
+	{
+		if (ADKShooterCharacter* Player = Cast<ADKShooterCharacter>(OtherActor))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Enemy collided with player!"));
+			Player->TakeDamage(CollisionDamage);
+			
+			// Start cooldown timer
+			bCanDealCollisionDamage = false;
+			GetWorld()->GetTimerManager().SetTimer(CollisionCooldownTimer, [this]() {
+				bCanDealCollisionDamage = true;
+			}, CollisionCooldown, false);
+		}
+	}
 }
 
 // Called when the game starts or when spawned

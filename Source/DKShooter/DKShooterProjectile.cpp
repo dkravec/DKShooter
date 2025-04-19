@@ -4,6 +4,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Enemy/Enemy.h"
+#include "DKShooterCharacter.h"
 
 ADKShooterProjectile::ADKShooterProjectile() 
 {
@@ -40,12 +41,17 @@ void ADKShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 		// Deal damage to the enemy
 		Enemy->TakeDamage(25); 
 	}
+	// Check if we hit the player
+	else if (ADKShooterCharacter* Player = Cast<ADKShooterCharacter>(OtherActor))
+	{
+		// Deal damage to the player
+		Player->TakeDamage(10);
+	}
 
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 	}
-
 
 	Destroy();
 }

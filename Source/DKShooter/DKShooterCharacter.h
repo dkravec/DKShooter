@@ -65,6 +65,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
 
+	/** Health related functions */
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void TakeDamage(int DamageAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void Die();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	int MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	int CurrentHealth = 100;
+
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

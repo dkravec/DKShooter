@@ -2,10 +2,10 @@
 
 #include "DKShooterHUD.h"
 #include "Components/TextBlock.h"
-#include "../DKShooterGameMode.h"
 #include "../Enemy/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include <DKShooter/DKShooterGameMode.h>
+#include <DKShooter/DKShooterCharacter.h>
 
 bool UDKShooterHUD::Initialize()
 {
@@ -19,6 +19,11 @@ bool UDKShooterHUD::Initialize()
     if (EnemyHealthText)
     {
         EnemyHealthText->TextDelegate.BindUFunction(this, "SetEnemyHealthText");
+    }
+
+    if (PlayerHealthText)
+    {
+        PlayerHealthText->TextDelegate.BindUFunction(this, "SetPlayerHealthText");
     }
 
     return Success;
@@ -48,5 +53,14 @@ FText UDKShooterHUD::SetEnemyHealthText()
     }
 
     return FText::FromString(FString::Printf(TEXT("Enemy Health: %d"), TotalHealth));
+}
+
+FText UDKShooterHUD::SetPlayerHealthText()
+{
+    if (ADKShooterCharacter* Player = Cast<ADKShooterCharacter>(GetOwningPlayerPawn()))
+    {
+        return FText::FromString(FString::Printf(TEXT("Player Health: %d/%d"), Player->CurrentHealth, Player->MaxHealth));
+    }
+    return FText::FromString("Player Health: 0/0");
 }
 
